@@ -2,6 +2,15 @@ import argparse
 import json
 import geoip2.database
 import pandas as pd
+import socket
+
+
+def ip2dns(ipaddress):
+    try:
+        hostname, _, _ = socket.gethostbyaddr(ipaddress)
+    except:
+        hostname = "HOSTNOTFOUND"
+    return hostname
 
 
 def geoip_lookup(json_data):
@@ -19,9 +28,9 @@ def geoip_lookup(json_data):
             city = response.city.name
             country = response.country.name
             fulllocation = city + ", " + country
-            return fulllocation
+            return (fulllocation, client_ip)
         except geoip2.errors.AddressNotFoundError:
-            return "NOT_FOUND"
+            return ("NOT_FOUND", client_ip)
         finally:
             reader.close()
     else:
@@ -30,8 +39,10 @@ def geoip_lookup(json_data):
 
 def enrich_df(dataframe):
     for index, row in dataframe.iterrows():
-        location = geoip_lookup(row["AuditData"])
-        df.at[index, "GeoIPLocation"] = location
+        data = geoip_lookup(row["AuditData"])
+        df.at[index, "GeoIPLocation"] = data[0]
+        df.at[index, "IPAddress"] = data[1]
+        df.at[index, "HostName"] = ip2dns(data[1])
 
 
 # argument handling
@@ -43,8 +54,10 @@ args = parser.parse_args()
 with open(args.filename, 'r') as mscsvfile:
     df = pd.read_csv(mscsvfile)
 
-# insert an empty column for our geoIP results
+# insert an empty column for our geoIP results, and IP address
 df['GeoIPLocation'] = None
+df['IPAddress'] = None
+df['HostName'] = None
 
 # enrich data with geoip info
 enrich_df(df)
