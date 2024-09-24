@@ -7,8 +7,10 @@ This script leverages the free Maxmind GeoIP Lite database. The database is stor
 
 To create/update the database run the maxmind-bins/geoipupdate_7.0.1_windows_amd64/update.bat file and it will use the config in maxmind-bins/config/GeoIP.conf. You can download this config directly from MaxMind after setting up a free account with them. https://dev.maxmind.com/geoip/geolite2-free-geolocation-data, generating a license key, and then clicking on "Download Config". Place that file in the appropriate location and run the aformentioned batch file.
 
-**To use:**
+**INSTALL & USAGE**
+
 **First - Get Logs:**
+
 log in to Purview > Audit.
 - Select your date range. If you don't know it, go ahead and set your filter for today - 180 days as that is the maximum default log retention.
 - Enter the user names to filter on. You do not want to do this on the whole tenant. Those searches are intentionally throttled by MS and would take forever anyway if they were not.
@@ -17,7 +19,23 @@ log in to Purview > Audit.
 - Wait for it to complete. Open the search and click export at the top. Microsoft says it will start downloading automatically when it is complete. This is a lie. Periodically hit F5 or revisit the console sometime later and the export/download should be ready from the completed search screen.
 - You will have a .csv file. Go ahead and filter this by RecordType = "15", and Operation = "UserLoggedIn". These are your logins. You can do this in excel, or with grep if you are feeling fancy. Make these a new .csv
 
-**Second - Run Script:**
+**Second - Install & Run Script:**
+- Clone this repo with git in some place you would like it to live
+```
+PS > git clone https://github.com/AttenSteph/purview_azure_geoip_enrich_logs.git
+PS > cd purview_azure_geoip_enrich_logs
+```
+- Download a GeoIP.conf file from MaxMind and place in .\maxmind-bins\config\GeoIP.conf
+- Download up to date GeoIP database:
+```
+PS > .\maxmind-bins\geoipupdate_7.0.1_windows_amd64\update.bat
+```
+- Create a python virtual environment and install modules. Something like:
+```
+PS> virtualenv --no-site-packages --distribute .env
+PS> pip install -r requirements.txt
+```
+
 - Start the python virtual environment. Supply one argument, the file you need to enrich.
 
 ```
