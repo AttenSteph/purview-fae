@@ -19,11 +19,23 @@ Login to [Purview > Audit](https://purview.microsoft.com/audit/).
 
 
 # 2) Install & Run
-
+- If you do not have git or python, install them.
+```
+winget install --silent --accept-package-agreements --accept-source-agreements git.git 
+winget install --silent --accept-package-agreements --accept-source-agreements Python.Python.3.12
+```
 - Clone this repo with git in some place you would like it to live
 ```
 git clone https://github.com/AttenSteph/purview_azure_geoip_enrich_logs.git
 cd purview_azure_geoip_enrich_logs
+```
+- Create a python virtual environment and install python modules.
+ - Note that your prompt will change to begin with (venv) after you run activate.ps1. You need to activate your virtual environment before you run the script in the future by repeating that step.
+```
+pip install virtualenv
+virtualenv venv
+.\venv\Scripts\activate.ps1
+pip install -r requirements.txt
 ```
 - [Register for a MaxMind account.](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data) Generate a license key, and then click on "Download Config". 
 - Save config as GeoIP.conf file from MaxMind and place in .\maxmind-bins\config\GeoIP.conf
@@ -31,15 +43,8 @@ cd purview_azure_geoip_enrich_logs
 ```
 .\maxmind-bins\geoipupdate_7.0.1_windows_amd64\update.bat
 ```
-- Create a python virtual environment and install modules.
+- Run the scriptSupply one argument, the file you need to enrich.
 ```
-pip install virtualenv
-virtualenv venv
-.\venv\Scripts\activate.ps1
-pip install -r requirements.txt
-```
-- Start the python virtual environment. Supply one argument, the file you need to enrich.
-```
-(venv) PS > python purview_azure_geoip_enrich_logs.py some/path/to/appropriatelogfile.csv
+python purview_azure_geoip_enrich_logs.py some/path/to/appropriatelogfile.csv
 ```
 A new Excel file will be written and opened for your review.
