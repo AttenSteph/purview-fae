@@ -1,18 +1,34 @@
 import argparse
 import json
+import os
+from tkinter.constants import FALSE
+
 import geoip2.database
 import geoip2.errors
 import pandas as pd
 import socket
 
+def de_dupe_ips(dataframe):
+    data = []
+    unique_ips = []
+    for index, row in dataframe.iterrows():
+        jsondata = json.loads((row["AuditData"]))
+        data.append(jsondata.get("ClientIP"))
+        unique_ips = list(set(data))
+    return unique_ips
 
-def ip2dns(ipaddress):
-    # TODO fix the try except mess, de-dupe all IP's with a dictionary and stop repeating requests, use a faster dns resolution module
-    try:
-        hostname, _, _ = socket.gethostbyaddr(ipaddress)
-    except:
-        hostname = "HOSTNOTFOUND"
-    return hostname
+
+# noinspection PyBroadException
+def ip2dns(ipaddresses):
+    ip2dnsdict = {}
+    for ip in ipaddresses:
+        try:
+            hostname = socket.gethostbyaddr(ip)
+            ip2dnsdict[ip] = hostname[0]
+        except:
+            hostname = "HOSTNOTFOUND"
+            ip2dnsdict[ip] = hostname
+    return ip2dnsdict
 
 
 def geoip_lookup(json_data):
@@ -31,8 +47,8 @@ def geoip_lookup(json_data):
     # Extract the ClientIP value
     client_ip = data.get("ClientIP")
 
-    # Extract DeviceID
-    device_id = data.get("Id")
+    # TODO see above comment; Extract DeviceID
+    # device_id = data.get("Id")
 
     if client_ip:
         # Perform GeoIP lookup
@@ -40,26 +56,29 @@ def geoip_lookup(json_data):
         try:
             response = reader.city(client_ip)
             city = response.city.name
+            # state = response.subdivisions
             country = response.country.name
+            # fulllocation = str(city) + ", " + str(state) + "  " + str(country)
             fulllocation = str(city) + ", " + str(country)
-            print(fulllocation, client_ip)
-            return (fulllocation, client_ip)
+            # print(fulllocation, client_ip)
+            return fulllocation, client_ip
         except geoip2.errors.AddressNotFoundError:
-            print(client_ip)
-            return ("NOT_FOUND", client_ip)
+            # print(client_ip)
+            return "NOT_FOUND", client_ip
         finally:
             reader.close()
     else:
         print("NOT_FOUND")
-        return ("NOT_FOUND", "NOT_FOUND")
+        return "NOT_FOUND", "NOT_FOUND"
 
 
-def enrich_df(dataframe):
+def enrich_df(dataframe, ip2dnslookkupdict):
     for index, row in dataframe.iterrows():
         data = geoip_lookup(row["AuditData"])
         df.at[index, "GeoIPLocation"] = str(data[0])
+        df.at[index, "HostName"] = ip2dnslookkupdict[str(data[1])]
         df.at[index, "IPAddress"] = str(data[1])
-        df.at[index, "HostName"] = ip2dns(str(data[1]))
+        df.at[index, "MultiGeoIPLink"] = "https://www.iplocation.net/ip-lookup" #TODO temporary until broader api support
 
 
 # argument handling
@@ -73,13 +92,25 @@ with open(args.filename, 'r') as mscsvfile:
 
 # insert an empty column for our geoIP results, and IP address
 df['GeoIPLocation'] = None
-df['IPAddress'] = None
 df['HostName'] = None
+df['IPAddress'] = None
+df['MultiGeoIPLink'] = None
+
+# reduce data frame to only colum "RecordType", value = "15"
+df = df.loc[df['RecordType'] == 15]
+
+# do DNS lookups once
+ips2resolve = de_dupe_ips(df)
+ip2dnsdictionary = ip2dns(ips2resolve)
 
 # enrich data with geoip info
-enrich_df(df)
+enrich_df(df, ip2dnsdictionary)
 
 # write out enriched file
-newfile = args.filename[:-4] + "_geoip_enriched.csv"
-df.to_csv(newfile, index=False)
+newfile = args.filename[:-4] + "_geoip_enriched.xlsx"
+df.to_excel(newfile, index=False)
 print("GeoIP enriched log data written to " + newfile)
+
+# open it in default app
+print("Opening file...")
+os.startfile(newfile, 'open')
