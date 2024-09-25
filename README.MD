@@ -41,7 +41,7 @@ pip install -r requirements.txt
 - Save config as GeoIP.conf file from MaxMind and place in .\maxmind-bins\config\GeoIP.conf
 - Download up to date GeoIP database with geoipupdate tool:
 ```
-.\maxmind-bins\geoipupdate_7.0.1_windows_amd64\update.bat
+.\maxmind-bins\geoipupdate_7.0.1_windows_amd64\geoipupdate.exe -f .\maxmind-bins\config\GeoIP.conf -d .\maxmind-bins\db\
 ```
 - Run the scriptSupply one argument, the file you need to enrich.
 ```
