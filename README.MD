@@ -29,7 +29,7 @@ You have two options. Option A: Download a release, extract, and run the include
 - Extract it.
 - Run it.
 
-It will run as is as it ships with a stale copy of the MaxMind GeoIP Lite database, but you really want to update that database, so I suggest you check the packaged README.MD and sign up for a MaxMind account, and get an API key.
+**It will run as is as it ships with a stale copy of the MaxMind GeoIP Lite database. However, you really want to update that database regularly. Check the packaged README.MD, sign up for a MaxMind account, and get an API key.**
 
 ## Option B: Setup a Dev Environment Like a Real Woman
 
