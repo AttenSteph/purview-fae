@@ -19,6 +19,20 @@ Login to [Purview > Audit](https://purview.microsoft.com/audit/).
 
 
 # 2) Install & Run
+
+You have two options. Option A: Download a release, extract, and run the included .exe or, option B: git clone and be able to contribute bug fixes/always be able to run the latest code.
+
+## Option A: Download and Run Latest Release
+
+- Look on the side bar.
+- Download the latest 7z release file.
+- Extract it.
+- Run it.
+
+It will run as is as it ships with a stale copy of the MaxMind GeoIP Lite database, but you really want to update that database, so I suggest you check the packaged README.MD and sign up for a MaxMind account, and get an API key.
+
+## Option B: Setup a Dev Environment Like a Real Woman
+
 - If you do not have git or python, install them.
 ```
 winget install --silent --accept-package-agreements --accept-source-agreements git.git 
