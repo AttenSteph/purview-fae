@@ -86,9 +86,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('filename', help="Path to the csv file to enrich.")
 args = parser.parse_args()
 
-# read csv file in
-with open(args.filename, 'r') as mscsvfile:
-    df = pd.read_csv(mscsvfile)
+# open the file; fixed file encoding parsing issues by forcing utf8 and back slash escaping
+file_encoding = 'utf8'  # set file_encoding to the file encoding (utf8, latin1, etc.)
+input_fd = open(args.filename, encoding=file_encoding, errors='backslashreplace')
+df = pd.read_csv(input_fd)
 
 # insert an empty column for our geoIP results, and IP address
 df['GeoIPLocation'] = None
