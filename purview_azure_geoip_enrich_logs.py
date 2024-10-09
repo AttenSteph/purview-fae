@@ -6,8 +6,6 @@ import geoip2.database
 import geoip2.errors
 import pandas as pd
 from rdns_reaper import RdnsReaper
-from yaspin import yaspin
-from yaspin.spinners import Spinners
 from colorama import init, Fore
 
 # set auto reset for colorama print messages
@@ -104,10 +102,10 @@ df['MultiGeoIPLink'] = None
 df = df.loc[df['RecordType'] == 15]
 
 # do DNS lookups once
-with yaspin(Spinners.hearts, text="Performing DNS reverse lookups..."):
-    ips2resolve = de_dupe_ips(df)
-    ips2resolve = [i for i in ips2resolve if i] # remove empty strings with list comprehension
-    ip2dnsdictionary = ip2dns(ips2resolve)
+print(Fore.CYAN + "[*] " + Fore.RESET + "Performing DNS reverse lookups...")
+ips2resolve = de_dupe_ips(df)
+ips2resolve = [i for i in ips2resolve if i] # remove empty strings with list comprehension
+ip2dnsdictionary = ip2dns(ips2resolve)
 print(Fore.GREEN + "[*] " + Fore.RESET + "Completed DNS reverse lookups.")
 
 # enrich data with geoip info
