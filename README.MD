@@ -1,7 +1,7 @@
 
 # purview_azure_geoip_enrich_logs.py
 
-Parsees raw purview logs, enriches with GeoIP, and makes them more readable.
+Parsees raw purview logs for logins, enriches with GeoIP, and makes them more readable.
 
 The raw logs do not resolve IP addresses to location as does the Entra interactive sign-in view. While useful, that view only goes back 7 or 30 days, and the logs stored in Purview go back 180 days by default.
 
