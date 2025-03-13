@@ -1,5 +1,5 @@
 
-# purview-fae.py
+# purview-pae.py
 
 Purview Parse and Enrich: Parses purview logs for logins, enriches with GeoIP, and makes them more readable.
 
@@ -43,8 +43,8 @@ winget install --silent --accept-package-agreements --accept-source-agreements P
 2. Clone this repo with git in some place you would like it to live
 
 ```batchfile
-git clone https://github.com/AttenSteph/purview-fae.git
-cd purview-fae
+git clone https://github.com/AttenSteph/purview-pae.git
+cd purview-pae
 ```
 
 3. Create a python virtual environment and install python modules.
@@ -68,7 +68,7 @@ pip install -r requirements.txt
 7. Run the scriptSupply one argument, the file you need to enrich.
 
 ```batchfile
-python purview-fae.py some/path/to/appropriatelogfile.csv
+python purview-pae.py some/path/to/appropriatelogfile.csv
 ```
 
 **Rejoice! A new Excel file will be written and opened for your review!**

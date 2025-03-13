@@ -8,7 +8,6 @@ import pandas as pd
 from rdns_reaper import RdnsReaper
 from colorama import init, Fore
 from easygui import *
-from win32con import NULLREGION
 
 # set auto reset for colorama print messages
 init(autoreset=True)
@@ -144,5 +143,5 @@ except Exception as e:
     print ("Exception: %s" % str(e))
     sys.exit(1)
 
-# pause to not close the window in case it was just double clicked
+# pause to not close the window in case it was just double-clicked
 os.system('pause')
