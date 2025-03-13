@@ -1,7 +1,7 @@
 
-# purview_azure_geoip_enrich_logs.py
+# purview-fae.py
 
-Parsees raw purview logs for logins, enriches with GeoIP, and makes them more readable.
+Purview Parse and Enrich: Parses purview logs for logins, enriches with GeoIP, and makes them more readable.
 
 The raw logs do not resolve IP addresses to location as does the Entra interactive sign-in view. While useful, that view only goes back 7 or 30 days, and the logs stored in Purview go back 180 days by default.
 
@@ -43,8 +43,8 @@ winget install --silent --accept-package-agreements --accept-source-agreements P
 2. Clone this repo with git in some place you would like it to live
 
 ```batchfile
-git clone https://github.com/AttenSteph/purview_azure_geoip_enrich_logs.git
-cd purview_azure_geoip_enrich_logs
+git clone https://github.com/AttenSteph/purview-fae.git
+cd purview-fae
 ```
 
 3. Create a python virtual environment and install python modules.
@@ -68,7 +68,7 @@ pip install -r requirements.txt
 7. Run the scriptSupply one argument, the file you need to enrich.
 
 ```batchfile
-python purview_azure_geoip_enrich_logs.py some/path/to/appropriatelogfile.csv
+python purview-fae.py some/path/to/appropriatelogfile.csv
 ```
 
 **Rejoice! A new Excel file will be written and opened for your review!**
