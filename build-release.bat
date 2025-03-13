@@ -1,1 +1,1 @@
-python -m nuitka --onefile --windows-console-mode=force .\purview_azure_geoip_enrich_logs.py
+python -m nuitka --onefile --enable-plugin=tk-inter --windows-console-mode=force .\purview-fae.py
