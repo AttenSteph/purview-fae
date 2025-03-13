@@ -7,6 +7,8 @@ import geoip2.errors
 import pandas as pd
 from rdns_reaper import RdnsReaper
 from colorama import init, Fore
+from easygui import *
+from win32con import NULLREGION
 
 # set auto reset for colorama print messages
 init(autoreset=True)
@@ -84,12 +86,21 @@ def enrich_df(dataframe, ip2dnslookkupdict):
 
 # basic argument handling
 parser = argparse.ArgumentParser()
-parser.add_argument('filename', help="Path to the csv file to enrich.")
+parser.add_argument('-f', '--filename', help="CSV file input.", required=False)
 args = parser.parse_args()
+
+if not args.filename:
+    # Open file GUI
+    print("Select a Purview CSV file export in the file open dialogue.")
+    title = "Open Purview Logs"
+    msg = "Click OK and select your Purview logs to filter."
+    filename = fileopenbox(msg,title)
+else:
+    filename = args.filename
 
 # open the file; fixed file encoding parsing issues by forcing utf8 and backslash escaping
 file_encoding = 'utf8'  # set file_encoding to the file encoding (utf8, latin1, etc.)
-input_fd = open(args.filename, encoding=file_encoding, errors='backslashreplace')
+input_fd = open(filename, encoding=file_encoding, errors='backslashreplace')
 df = pd.read_csv(input_fd)
 
 # insert an empty column for our geoIP results, and IP address
@@ -116,7 +127,7 @@ print(Fore.GREEN + "[*] " + Fore.RESET + "Data enriched.")
 # write out enriched file
 print(Fore.CYAN + "[*] " + Fore.RESET + "Writing Excel file...")
 try:
-    newfile = args.filename[:-4] + "_geoip_enriched.xlsx"
+    newfile = filename[:-4] + "_geoip_enriched.xlsx"
     df.to_excel(newfile, index=False)
     print(Fore.GREEN + "[*] " + Fore.RESET + "GeoIP enriched log data written to " + newfile)
 except Exception as e:
@@ -132,3 +143,6 @@ except Exception as e:
     print(Fore.RED + "[*] " + Fore.RESET + "Can't open file. Something went very wrong.")
     print ("Exception: %s" % str(e))
     sys.exit(1)
+
+# pause to not close the window in case it was just double clicked
+os.system('pause')
