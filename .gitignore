@@ -2,6 +2,7 @@
 /*
 
 # File Exceptions
+!.gitignore
 *.mmdb
 !build-release.bat
 !purview-pae.py
