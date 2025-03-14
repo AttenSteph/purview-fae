@@ -31,7 +31,7 @@ def ip2dns(ipaddresses):
     return rdr.get_dict()
 
 
-def geoip_lookup(json_data):
+def mm_geoip_lookup(json_data):
     """perform geoip lookup with offline maxmind database"""
     try:
         data = json.loads(json_data)
@@ -46,21 +46,15 @@ def geoip_lookup(json_data):
         print(Fore.YELLOW + "[*] " + Fore.RESET + "Failed to extract ClientIP value")
         print(Fore.YELLOW + "[*] " + Fore.RESET + "Exception: %s" % str(eclientip))
 
-    # TODO refactor
     if client_ip:
         # Perform GeoIP lookup
         reader = geoip2.database.Reader("maxmind-local-db/GeoLite2-City.mmdb")
         try:
             response = reader.city(client_ip)
-            city = response.city.name
-            # state = response.subdivisions
-            country = response.country.name
-            # fulllocation = str(city) + ", " + str(state) + "  " + str(country)
-            fulllocation = str(city) + ", " + str(country)
-            # print(fulllocation, client_ip)
+            fulllocation = str(response.country.name) + ", " + str(response.subdivisions.most_specific.name) + ", " + str(response.city.name)
             return fulllocation, client_ip
         except geoip2.errors.AddressNotFoundError as egeoip:
-            print(Fore.YELLOW + "[*] " + Fore.RESET + "Exception with geoip lookup for " + client_ip)
+            print(Fore.YELLOW + "[*] " + Fore.RESET + "Miss! MaxMind geoip lookup for " + client_ip)
             print(Fore.YELLOW + "[*] " + Fore.RESET + "Exception: %s" % str(egeoip))
             return "NOT_FOUND", client_ip
         finally:
@@ -72,10 +66,10 @@ def geoip_lookup(json_data):
 def enrich_df(dataframe, ip2dnslookkupdict):
     """enrich dataframe with reverse dns and geoip information"""
     for index, row in dataframe.iterrows():
-        data = geoip_lookup(row["AuditData"])
-        df.at[index, "GeoIPLocation"] = str(data[0])
+        data = mm_geoip_lookup(row["AuditData"])
+        df.at[index, "MMGeoIPLocation"] = str(data[0])
         try:
-            df.at[index, "HostName"] = ip2dnslookkupdict[str(data[1])]
+            df.at[index, "ReverseDNSLookup"] = ip2dnslookkupdict[str(data[1])]
         except KeyError as keye:
             print(Fore.YELLOW + "[*] " + Fore.RESET + "IP2DNS dictionary key lookup failure.")
             print(Fore.YELLOW + "[*] " + Fore.RESET + "Exception: %s" % str(keye))
@@ -103,8 +97,8 @@ input_fd = open(filename, encoding=file_encoding, errors='backslashreplace')
 df = pd.read_csv(input_fd)
 
 # insert an empty column for our geoIP results, and IP address
-df['GeoIPLocation'] = None
-df['HostName'] = None
+df['MMGeoIPLocation'] = None
+df['ReverseDNSLookup'] = None
 df['IPAddress'] = None
 df['MultiGeoIPLink'] = None
 
