@@ -49,7 +49,7 @@ def geoip_lookup(json_data):
     # TODO refactor
     if client_ip:
         # Perform GeoIP lookup
-        reader = geoip2.database.Reader("maxmind-bins/db/GeoLite2-City.mmdb")
+        reader = geoip2.database.Reader("maxmind-local-db/GeoLite2-City.mmdb")
         try:
             response = reader.city(client_ip)
             city = response.city.name
