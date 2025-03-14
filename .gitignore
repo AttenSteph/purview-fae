@@ -7,9 +7,13 @@
 !purview-pae.py
 !README.MD
 !requirements.txt
+!GeoIP.conf
 
 # Folder Exceptions
 !maxmind-local-db
 !maxmind-local-db/*
 !maxmind-bins
 !maxmind-bins/*
+
+# Specifically ignore MaxMind DB's again
+*.mmdb
