@@ -4,7 +4,7 @@ rmdir "purview-pae.onefile-build" /S /Q
 rmdir "purview-pae.dist" /S /Q
 rmdir "purview-pae.build" /S /Q
 python -m nuitka --onefile --enable-plugin=tk-inter --windows-console-mode=force .\purview-pae.py
-@REM mkdir -p purview-pae_release\maxmind-bins
+mkdir purview-pae_release\maxmind-bins
 mkdir purview-pae_release\maxmind-local-db
 copy README.MD purview-pae_release\
 copy GeoIP.conf purview-pae_release\
